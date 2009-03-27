@@ -18,5 +18,11 @@ lib/datamapper4rails/adapters/base_adapter.rb
 lib/datamapper4rails/adapters/restful_adapter.rb
 lib/datamapper4rails/database_config.rb
 lib/datamapper4rails/datamapper_store.rb
+lib/datamapper4rails/identity_maps.rb
+lib/datamapper4rails/preload_models.rb
 lib/datamapper4rails/restful_transactions.rb
 lib/datamapper4rails/version.rb
+spec/datamapper_store_spec.rb
+spec/restful_adapter_spec.rb
+spec/spec.opts
+spec/spec_helper.rb

@@ -2,13 +2,13 @@ require 'rails_generator/generators/components/model/model_generator'
 require 'active_record'
 require File.dirname(__FILE__) + '/../rspec_default_values'
 
-class RspecDmModelExtendedGenerator <ModelGenerator
+class RspecDmModelGenerator <ModelGenerator
 
   def manifest
     record do |m|
 
       # Check for class naming collisions.
-      m.class_collisions class_path, class_name
+      #m.class_collisions class_path, class_name
 
       # Model, spec, and fixture directories.
       m.directory File.join('app/models', class_path)

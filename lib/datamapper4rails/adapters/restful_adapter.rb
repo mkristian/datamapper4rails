@@ -1,7 +1,8 @@
-require 'adapters/restful_adapter'
+require 'datamapper4rails/adapters/base_adapter'
 require 'net/http'
 require 'extlib/inflection'
 require 'extlib/module'
+require 'dm-serializer'
 
 module DataMapper
   module Adapters
@@ -44,6 +45,18 @@ module DataMapper
           raise "compound keys are not supported"
         end
       end
+      
+      def single_entity_query?(query)
+        query.conditions.count {|c| c[1].key? and c[0] == :eql} == query.model.key.size
+      end
+
+      def attributes_to_xml(name, attributes)
+        xml = "<#{name}>"
+        attributes.each do |attr, val|
+          xml += "<#{attr.name}>#{val}</#{attr.name}>"
+        end
+        xml += "</#{name}>"
+      end
 
       def http_get(uri)
         send_request do |http|
@@ -66,13 +79,16 @@ module DataMapper
         end
       end
 
-      def http_put(uri, data = {})
+      def http_put(uri, data = nil)
         send_request do |http|
-          request = Net::HTTP::Put.new(uri)
+          request = Net::HTTP::Put.new(uri, {
+                                          'content-type' => 'application/xml',
+                                          'content-length' => data.length.to_s
+                                        })
           request.basic_auth(@uri[:login], 
                              @uri[:password]) unless @uri[:login].blank?
-          request.set_form_data(data)
-          http.request(request)
+#          request.set_form_data(data)
+          http.request(request, data)
         end
       end
 
@@ -112,14 +128,25 @@ module DataMapper
 #puts
 #puts "elements"
 #p elements
+#p query
+#p model
         resource = model.load(model.properties.collect do |f|
                                   elements[f.name]
                                 end, query)
         resource.send("#{keys_from_query(query)[0].name}=".to_sym, elements[keys_from_query(query)[0].name] )
-#p resource
-        associations.each do |name, association|          
-          model = 
+# p resource
+#p associations
+        associations.each do |name, association| 
+#          puts "asso"
+#          p model
+#          p name
+#          p association
+#p model.relationships
+          is_one_to_one = false
+          asso_model = 
             if rel = model.relationships[name]
+#puts "rel"
+#p rel
               if rel.child_model == model
                 rel.parent_model
               else
@@ -129,17 +156,38 @@ module DataMapper
 #::Extlib::Inflection.constantize(::Extlib::Inflection.classify(name))
 #                    model.find_const(::Extlib::Inflection.classify(name))
             end
+  #        p asso_model
           if resource.respond_to? "#{name}=".to_sym
+           #  puts
+#             puts "association"
+#             puts name
+#             p model
+#             p asso_model
             resource.send("#{name}=".to_sym, 
-                          parse_resource(association, model,
-                                         ::DataMapper::Query.new(query.repository, model )))
+                          parse_resource(association, asso_model,
+                                         ::DataMapper::Query.new(query.repository, asso_model ))) unless asso_model.nil?
           else
             resource.send(("#{name.to_s.pluralize}<" + "<").to_sym, 
-                          parse_resource(association, model,
-                                         ::DataMapper::Query.new(query.repository, model )))
+                          parse_resource(association, asso_model,
+                                         ::DataMapper::Query.new(query.repository, asso_model ))) unless asso_model.nil?
+          end
+        end
+
+#puts "many 2 many"
+#p many_to_many
+        many_to_many.each do |name, many|
+          if model.relationships[name]
+            # TODO
+          else
+ #           p ::Extlib::Inflection.classify(name.to_s.singularize)
+            many_model = Object.const_get(::Extlib::Inflection.classify(name.to_s.singularize))
+            resource.send(name).send(("<" + "<").to_sym, 
+                       parse_resource(many, many_model,
+                                      ::DataMapper::Query.new(query.repository, many_model ))) unless many_model.nil?
           end
         end
         resource.instance_variable_set(:@new_record, false)
+#p resource
         resource
       end
 
@@ -168,65 +216,70 @@ module DataMapper
 
       # @see BaseAdapter
       def read_resource(query)
-        if(query.conditions.empty?)
-          raise "not implemented"
+        key = key_value_from_query(query)
+        uri = "/#{resource_name_from_query(query).pluralize}/#{key}.xml"
+        logger.debug { "get #{uri}" }
+        response = http_get(uri)
+        if response.kind_of?(Net::HTTPSuccess)
+          logger.debug { response.body.to_s }
+          parse_resource(REXML::Document::new(response.body).root, 
+                         query.model, 
+                         query)
         else
-          key = key_value_from_query(query)
-          uri = "/#{resource_name_from_query(query).pluralize}/#{key}.xml"
+            #TODO may act on different response codes differently
+        end
+      end
+
+      # @see BaseAdapter
+      def read_resources(query)
+        if single_entity_query?(query)
+          [read_resource(query)]
+        else
+          uri = "/#{resource_name_from_query(query).pluralize}.xml"
           logger.debug { "get #{uri}" }
           response = http_get(uri)
           if response.kind_of?(Net::HTTPSuccess)
-            parse_resource(REXML::Document::new(response.body).root, 
-                           query.model, 
-                           query)
+            result = []
+            logger.debug { response.body.to_s }
+            REXML::Document::new(response.body).root.each do |element|
+              result << parse_resource(element, 
+                                       query.model, 
+                                       query)
+            end
+            result
           else
             #TODO may act on different response codes differently
           end
         end
       end
 
-      # @see BaseAdapter
-      def read_resources(query)
-#        raise "not implemented"
-        [read_resource(query)]
-      end
-
       # @overwrite BaseAdapter
       def update(attributes, query)
-        name = resource_name_from_query(query)
-        params = {}
-        attributes.each do |attr, val|
-          params["#{name}[#{attr.name}]"]=val
+        if query.limit == 1 or single_entity_query?(query)
+          xml = attributes_to_xml(resource_name_from_query(query), attributes)
+          key = key_value_from_query(query)
+          uri = "/#{resource_name_from_query(query).pluralize}/#{key}.xml"
+          logger.debug { "put #{uri}" }
+          response = http_put(uri, xml)
+          response.kind_of?(Net::HTTPSuccess)
+        else
+          super
         end
-        key = key_value_from_query(query)
-        uri = "/#{name.pluralize}/#{key}.xml"
-        logger.debug { "put #{uri}" }
-        response = http_put(uri, params)
-        response.kind_of?(Net::HTTPSuccess)
       end
 
       # @see BaseAdapter
       def update_resource(resource, attributes)
         query = resource.to_query
-        if(query.conditions.empty?)
-          raise "not implemented"
-        else
-          name = resource.name
-          params = {}
-          attributes.each do |attr, val|
-            params["#{name}[#{attr.name}]"]=val
-          end
-          key = key_value_from_query(query)
-          logger.debug {resource.to_xml}
-          response = http_put("/#{resource_name_from_query(query).pluralize}/#{key}.xml", params)
-          response.kind_of?(Net::HTTPSuccess)
-        end
+        xml = attributes_to_xml(resource.name, attributes)
+        key = key_value_from_query(query)
+        logger.debug {resource.to_xml}
+        response = http_put("/#{resource_name_from_query(query).pluralize}/#{key}.xml", xml)
+        response.kind_of?(Net::HTTPSuccess)
       end
-
+      
       # @overwrite BaseAdapter
       def delete(query)
-        # TODO limit == 1 is NOT sufficient ONLY necessary
-        if query.limit == 1 
+        if query.limit == 1 or single_entity_query?(query)
           name = resource_name_from_query(query)
           key = key_value_from_query(query)
           uri = "/#{name.pluralize}/#{key}.xml"
@@ -241,7 +294,7 @@ module DataMapper
       # @see BaseAdapter
       def delete_resource(resource)
         name = resource.name
-        key = key_value_from_query(resource.to_queryquery)
+        key = key_value_from_query(resource.to_query)
         uri = "/#{name.pluralize}/#{key}.xml"
         logger.debug { "delete #{uri}" }
         response = http_delete(uri)

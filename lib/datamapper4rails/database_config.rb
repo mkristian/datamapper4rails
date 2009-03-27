@@ -6,8 +6,13 @@ end
 
 def create_connection()
   conf = config.dup
-  repositories = conf.delete(:repositories)
-  ::DataMapper.setup(:default, conf) unless conf.empty?
+  if repositories = conf.delete(:repositories)
+    repositories.each do |repo, conf|
+      ::DataMapper.setup(repo, conf) unless conf.empty?
+    end
+  else
+    ::DataMapper.setup(:default, conf) unless conf.empty?
+  end
 end
 
 def get_config_for_environment

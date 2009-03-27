@@ -8,8 +8,10 @@ module ActionController
         super
         if options.delete(:cache)
           @@cache = {}
+        else
+          @@cache = nil unless self.class.class_variable_defined? :@@cache
         end
-        @@session_class = ::DatamapperStore::Session
+        @@session_class = options.delete(:session_class) || ::DatamapperStore::Session unless (self.class.class_variable_defined? :@@session_class and @@session_class)
       end
       
       private
@@ -32,10 +34,8 @@ module ActionController
             @@session_class.get(sid)
           end || @@session_class.new(:session_id => sid)
         session.data = session_data || {}
-        if session.new_record?
-          session.updated_at = Time.now
-          @@cache[sid] = session if @@cache
-        end
+        session.updated_at = Time.now if session.dirty?
+        @@cache[sid] = session if @@cache
         session.save
       end
     end
@@ -60,6 +60,7 @@ module DatamapperStore
     def data=(data)
       attribute_set(:data, ::Base64.encode64(Marshal.dump(data)))
     end
+
     def data
       Marshal.load(::Base64.decode64(attribute_get(:data)))
     end
