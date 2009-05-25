@@ -9,7 +9,7 @@ class Item
   property :id, Serial
   property :name, String
 
-  belongs_to :container
+  belongs_to :group
 end
 class User
   include DataMapper::Resource
@@ -25,6 +25,7 @@ class Group
   property :id, Serial
 
   has n, :users, :through => Resource
+  has n, :items
 end
 
 class Container
@@ -33,7 +34,10 @@ class Container
   property :id, Serial
 
   has 1, :user
-  has n, :items
+
+  def items
+    @items ||= []
+  end
 end
 
 def mock_attribute(name)
@@ -164,15 +168,28 @@ describe DataMapper::Adapters::RestfulAdapter do
 #describe 'associations of ' + DataMapper::Adapters::RestfulAdapter.to_s do
   it 'should read nested resource (belongs_to)' do
     @adapter.body = "<item><id>123</id><name>zappa</name>" +
-      "<container><id>342</id>" + #<items tpye='array'><item><id>1234</id><name>frank zappa</name></item></items>" + 
-      "</container>" +
+      "<group><id>342</id>" + #<items tpye='array'><item><id>1234</id><name>frank zappa</name></item></items>" + 
+      "</group>" +
       "</item>"
 
     query = DataMapper::Query.new(Item.new.repository, Item)
     item = @adapter.read_resource(query)
     item.id.should == 123
     item.name.should == 'zappa'
-    item.container.id.should == 342
+    item.group.id.should == 342
+  end
+
+  it 'should read nested resource manual "has n"' do
+    @adapter.body = "<container><id>342</id><items type='array'>" +
+      "<item><id>543</id><name>hmm</name></item>" +
+      "</items></container>"
+
+    query = DataMapper::Query.new(Container.new.repository, Container)
+    c = @adapter.read_resource(query)
+    c.id.should == 342
+    c.items.size.should == 1
+    c.items[0].id.should == 543
+    c.items[0].name.should == 'hmm'
   end
 
 #   it 'should read nested resource (has 1)' do

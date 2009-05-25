@@ -129,12 +129,16 @@ module DataMapper
 #puts "elements"
 #p elements
 #p query
-#p model
-        resource = model.load(model.properties.collect do |f|
+#p model.properties
+        props = model.properties.length == 0 ? query.fields : model.properties
+#p props
+        resource = model.load(props.collect do |f| #model.properties.collect do |f|
                                   elements[f.name]
                                 end, query)
+#p resource
+#p query
         resource.send("#{keys_from_query(query)[0].name}=".to_sym, elements[keys_from_query(query)[0].name] )
-# p resource
+#p resource
 #p associations
         associations.each do |name, association| 
 #          puts "asso"
@@ -167,7 +171,7 @@ module DataMapper
                           parse_resource(association, asso_model,
                                          ::DataMapper::Query.new(query.repository, asso_model ))) unless asso_model.nil?
           else
-            resource.send(("#{name.to_s.pluralize}<" + "<").to_sym, 
+            resource.send("#{name.to_s.pluralize}".to_sym).send(:<<, 
                           parse_resource(association, asso_model,
                                          ::DataMapper::Query.new(query.repository, asso_model ))) unless asso_model.nil?
           end
@@ -178,12 +182,22 @@ module DataMapper
         many_to_many.each do |name, many|
           if model.relationships[name]
             # TODO
+            puts "TODO"
           else
  #           p ::Extlib::Inflection.classify(name.to_s.singularize)
             many_model = Object.const_get(::Extlib::Inflection.classify(name.to_s.singularize))
-            resource.send(name).send(("<" + "<").to_sym, 
-                       parse_resource(many, many_model,
-                                      ::DataMapper::Query.new(query.repository, many_model ))) unless many_model.nil?
+#p resource
+#p many_model
+#puts "many"
+#p(parse_resource(many, many_model,
+#                                      ::DataMapper::Query.new(query.repository, many_model ))) unless many_model.nil?
+            set = resource.send(name)
+ #           p set
+            many.elements.each do |element|
+              set << parse_resource(element, many_model,
+                                    ::DataMapper::Query.new(query.repository, many_model ))
+            end unless many_model.nil?
+  #          p set
           end
         end
         resource.instance_variable_set(:@new_record, false)
@@ -197,6 +211,7 @@ module DataMapper
         uri = "/#{name.pluralize}.xml"
         logger.debug { "post #{uri}" }
         response = http_post(uri, resource.to_xml )
+        logger.debug { response.body.to_s }
         resource_new = parse_resource(REXML::Document::new(response.body).root, 
                                   resource.model,
                                   ::DataMapper::Query.new(resource.repository, 
@@ -211,7 +226,7 @@ module DataMapper
         resource_new.send(:relationships).each do |key, value|
           resource.send("#{key}=".to_sym, resource_new.send(key))
         end
-        resource
+        resource_new
       end
 
       # @see BaseAdapter
