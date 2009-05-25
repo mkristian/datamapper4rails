@@ -33,7 +33,7 @@ describe <%= class_name %> do
   it "should be numerical <%= attribute.name %>" do
     <%= singular_name %> = <%= class_name %>.create(@valid_attributes.merge(:<%= attribute.name %> => "none-numberic" ))
     <%= singular_name %>.<%= attribute.name %>.to_i.should == 0
-    <%= singular_name %>.errors.size.should == 0
+    <%= singular_name %>.errors.size.should == 1
   end
 
 <% end -%>
