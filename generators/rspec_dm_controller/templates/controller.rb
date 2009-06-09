@@ -2,7 +2,11 @@ class <%= controller_class_name %>Controller < ApplicationController
   # GET /<%= table_name %>
   # GET /<%= table_name %>.xml
   def index
+<% if options[:ixtlan] -%>
+    @<%= table_name %> = <%= class_name %>.all(@find_all_args)
+<% else -%>
     @<%= table_name %> = <%= class_name %>.all()
+<% end -%>
 
     respond_to do |format|
       format.html # index.html.erb
@@ -76,8 +80,8 @@ class <%= controller_class_name %>Controller < ApplicationController
   # DELETE /<%= table_name %>/1
   # DELETE /<%= table_name %>/1.xml
   def destroy
-    <%= file_name %> = <%= class_name %>.get(params[:id])
-    <%= file_name %>.destroy if <%= file_name %>
+    @<%= file_name %> = <%= class_name %>.get(params[:id])
+    @<%= file_name %>.destroy if @<%= file_name %>
 
     respond_to do |format|
       flash[:notice] = <% if options[:i18n] -%>t('<%= plural_name %>.<%= singular_name %>_deleted')<% else -%>'<%= class_name %> was successfully deleted.'<% end -%>
@@ -86,4 +90,22 @@ class <%= controller_class_name %>Controller < ApplicationController
       format.xml  { head :ok }
     end
   end
+
+<% if options[:ixtlan] -%>
+  private
+
+  def audit
+    if @<%= file_name %>
+      @<%= file_name %>.to_s
+    elsif @<%= table_name %>
+<% if options[:ixtlan] -%>
+      "<%= controller_class_name %>[#{@<%= table_name %>.size};#{@field}:#{@direction}]"
+<% else -%>
+      "<%= controller_class_name %>[#{@<%= table_name %>.size}]"
+<% end -%>
+    else
+      ""
+    end
+  end
+<% end -%>
 end

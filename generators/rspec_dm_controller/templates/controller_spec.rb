@@ -13,6 +13,11 @@ describe <%= controller_class_name %>Controller do
       [Group.new(:name => "root")]
     end
     controller.send(:current_user=, user)
+<% if options[:ixtlan] -%>
+    mock_configuration = mock_model(Configuration,{})
+    Configuration.should_receive(:instance).any_number_of_times.and_return(mock_configuration)
+    mock_configuration.should_receive(:session_idle_timeout).any_number_of_times.and_return(1)
+<% end -%>
   end
 <% end -%>
 

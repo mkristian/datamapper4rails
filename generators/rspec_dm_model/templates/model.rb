@@ -14,4 +14,10 @@ class <%= class_name %>
   timestamps :at
 
 <% end -%>
+
+<% if options[:ixtlan] -%>
+   def to_s
+     "<%= class_name %>(#{attribute_get(:id)})"
+   end
+<% end -%>
 end
