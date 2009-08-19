@@ -24,15 +24,13 @@ is implemented as around filter in rails and gets prepend to the filters of the 
 
 === datamapper session store
 
-this is just the datamapper compaign to the activerecord_store.
+add in your config/initializers/session.rb
 
-in config/environment.rb add
+    ActionController::Base.session_store = :datamapper_store
 
-  config.action_controller.session_store = :datamapper_store
+in case you need a memory cache for your sessions on top of it add the following. but be aware that there is no cleanup of the memory session.
 
-in case you need a memory cache for your sessions add this
-
-  config.action_controller.session = { :cache => true }
+  ActionController::Base.session = { :cache => true }
 
 === generators for datamapper models
 
