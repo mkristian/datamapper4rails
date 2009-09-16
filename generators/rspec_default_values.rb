@@ -1,3 +1,6 @@
+require 'rails_generator/generated_attribute'
+require 'active_record'
+
 module Rails
   module Generator
     class GeneratedAttribute
@@ -6,14 +9,14 @@ module Rails
           when :int, :integer               then "1"
           when :float                       then "1.5"
           when :decimal, :big_decimal       then "9.99"
-          when :date_time, :datetime, 
+          when :date_time, :datetime,
                           :timestamp, :time then "Time.now"
           when :date                        then "Date.today"
           when :string, :text               then "\"value for #{@name}\""
           when :boolean                     then "false"
           else
             ""
-        end      
+        end
       end
     end
   end

@@ -9,13 +9,16 @@ describe <%= class_name %> do
     }
   end
 
+  it "should create a new instance given valid attributes" do
+    <%= class_name %>.create(@valid_attributes)
+  end
 <% attributes.each do |attribute| -%>
   it "should require <%= attribute.name %>" do
     <%= singular_name %> = <%= class_name %>.create(@valid_attributes.merge(:<%= attribute.name %> => nil))
     <%= singular_name %>.errors.on(:<%= attribute.name %>).should_not == nil
   end
 
-<% if attribute.type == :string or attribute.type == :text -%>
+<% if attribute.type == :string or attribute.type == :text  or attribute.type == :slug -%>
   it 'should not match <%= attribute.name %>' do
     <%= singular_name %> = <%= class_name %>.create(@valid_attributes.merge(:<%= attribute.name %> => "<script" ))
     <%= singular_name %>.errors.on(:<%= attribute.name %>).should_not == nil

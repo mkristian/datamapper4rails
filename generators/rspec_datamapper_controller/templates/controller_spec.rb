@@ -125,19 +125,19 @@ describe <%= controller_class_name %>Controller do
 
       it "updates the requested <%= file_name %>" do
         <%= class_name %>.should_receive(:get!).with("37").and_return(mock_<%= file_name %>)
-        mock_<%= file_name %>.should_receive(:update_attributes).with({'these' => 'params'})
+        mock_<%= file_name %>.should_receive(:update).with({'these' => 'params'})
         mock_<%= file_name %>.should_receive(:dirty?)
         put :update, :id => "37", :<%= file_name %> => {:these => 'params'}
       end
 
       it "exposes the requested <%= file_name %> as @<%= file_name %>" do
-        <%= class_name %>.stub!(:get!).and_return(mock_<%= file_name %>(:update_attributes => true))
+        <%= class_name %>.stub!(:get!).and_return(mock_<%= file_name %>(:update => true))
         put :update, :id => "1"
         assigns(:<%= file_name %>).should equal(mock_<%= file_name %>)
       end
 
       it "redirects to the <%= file_name %>" do
-        <%= class_name %>.stub!(:get!).and_return(mock_<%= file_name %>(:update_attributes => true))
+        <%= class_name %>.stub!(:get!).and_return(mock_<%= file_name %>(:update => true))
         put :update, :id => "1"
         response.should redirect_to(<%= table_name.singularize %>_url(mock_<%= file_name %>))
       end
@@ -148,20 +148,20 @@ describe <%= controller_class_name %>Controller do
 
       it "updates the requested <%= file_name %>" do
         <%= class_name %>.should_receive(:get!).with("37").and_return(mock_<%= file_name %>)
-        mock_<%= file_name %>.should_receive(:update_attributes).with({'these' => 'params'})
+        mock_<%= file_name %>.should_receive(:update).with({'these' => 'params'})
         mock_<%= file_name %>.should_receive(:dirty?)
         put :update, :id => "37", :<%= file_name %> => {:these => 'params'}
       end
 
       it "exposes the <%= file_name %> as @<%= file_name %>" do
-        <%= class_name %>.stub!(:get!).and_return(mock_<%= file_name %>(:update_attributes => false))
+        <%= class_name %>.stub!(:get!).and_return(mock_<%= file_name %>(:update => false))
         mock_<%= file_name %>.should_receive(:dirty?)
         put :update, :id => "1"
         assigns(:<%= file_name %>).should equal(mock_<%= file_name %>)
       end
 
       it "re-renders the 'edit' template" do
-        <%= class_name %>.stub!(:get!).and_return(mock_<%= file_name %>(:update_attributes => false, :dirty? => true))
+        <%= class_name %>.stub!(:get!).and_return(mock_<%= file_name %>(:update => false, :dirty? => true))
         put :update, :id => "1"
         response.should render_template('edit')
       end
