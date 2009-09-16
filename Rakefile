@@ -9,10 +9,10 @@ require 'pathname'
 
 require './lib/datamapper4rails/version.rb'
 
-Hoe.new('datamapper4rail-ixtlan', Datamapper4rails::VERSION) do |p|
+Hoe.new('datamapper4rail', Datamapper4rails::VERSION) do |p|
   p.rubyforge_name = 'datamapper4rail'
   p.developer('mkristian', 'm.kristian@web.de')
-  p.extra_deps = ['slf4r']
+  p.extra_deps = ['slf4r', 'rack_datamapper', 'rails_datamapper']
   p.remote_rdoc_dir = '' # Release to root
 end
 
