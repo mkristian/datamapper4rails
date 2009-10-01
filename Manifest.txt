@@ -2,10 +2,12 @@ History.txt
 Manifest.txt
 README.txt
 Rakefile
+datamapper_rails_templates.rb
 generate.sh
 generators/datamapper_install/datamapper_install_generator.rb
 generators/datamapper_install/templates/datamapper.rake
 generators/datamapper_model/datamapper_model_generator.rb
+generators/datamapper_model/templates/migration.rb
 generators/datamapper_model/templates/model.rb
 generators/datamapper_rspec_model/datamapper_rspec_model_generator.rb
 generators/datamapper_rspec_model/templates/model_spec.rb
@@ -21,7 +23,6 @@ generators/datamapper_scaffold/templates/view_show.html.erb
 lib/datamapper4rails.rb
 lib/datamapper4rails/adapters/base_adapter.rb
 lib/datamapper4rails/adapters/restful_adapter.rb
-lib/datamapper4rails/database_config.rb-
 lib/datamapper4rails/datamapper_store.rb
 lib/datamapper4rails/identity_maps.rb
 lib/datamapper4rails/overlay.rb
@@ -29,7 +30,6 @@ lib/datamapper4rails/preload_models.rb
 lib/datamapper4rails/restful_transactions.rb
 lib/datamapper4rails/rspec_default_values.rb
 lib/datamapper4rails/version.rb
-lib/datamapper_rails_templates.rb
 spec/datamapper_store_spec.rb
 spec/restful_adapter_spec.rb
 spec/spec.opts
