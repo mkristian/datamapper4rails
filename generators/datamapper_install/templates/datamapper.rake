@@ -44,6 +44,12 @@ namespace :db do
     ::DataMapper.auto_upgrade!
   end
 
+  # this is needed for rspec and test tasks  
+  namespace :test do
+    RAILS_ENV = 'test'
+    task :prepare => :automigrate
+  end
+
   namespace :migrate do
     task :load => :environment do
       require 'dm-migrations/migration_runner'

@@ -13,6 +13,7 @@ generators/datamapper_rspec_model/datamapper_rspec_model_generator.rb
 generators/datamapper_rspec_model/templates/model_spec.rb
 generators/datamapper_rspec_scaffold/datamapper_rspec_scaffold_generator.rb
 generators/datamapper_rspec_scaffold/templates/controller_spec.rb
+generators/datamapper_rspec_scaffold/templates/edit_erb_spec.rb
 generators/datamapper_scaffold/datamapper_scaffold_generator.rb
 generators/datamapper_scaffold/templates/controller.rb
 generators/datamapper_scaffold/templates/functional_test.rb
