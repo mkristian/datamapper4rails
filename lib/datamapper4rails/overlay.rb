@@ -7,11 +7,25 @@ require 'rails_generator/base'
 
 Rails::Generator::NamedBase.class_eval do
 
+  def overlay_array
+    a = []
+    def a.lookup(clazz)
+      @clazz = clazz
+    end
+    a.lookup(self.class)
+    def a.add_generator(generator_name, prepend = false)
+      path = File.join(@clazz.lookup(generator_name).path, 'templates')
+      push(path) unless member? path
+    end
+    a
+  end
+
   def overlay_dirs
-    options[:overlay_dirs] ||= []
+    options[:overlay_dirs] ||= overlay_array
   end
 
   def add_options!(opt)
+    # TODO this seems not to work anymore !!
     super
     opt.on("--overlay-dir DIR",
            "overlay") do |v|
@@ -25,9 +39,13 @@ Rails::Generator::NamedBase.class_eval do
 
     # first check if the template can be found with in any of the overlay directories
     if dirs = options[:overlay_dirs]
+      generator_name = self.class.name.underscore.sub(/_generator/, '')
+      dirs.insert(0, File.join(self.class.lookup(generator_name).path, 'templates'))
+      
       file = path.nil? ? name : path
-      dirs.reverse.each do |dir|
+      dirs.each do |dir|
         if (f = File.join(dir, file)) and File.exists?(f)
+          logger.overlay f
           return f
         end
       end

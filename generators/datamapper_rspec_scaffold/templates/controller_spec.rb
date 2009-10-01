@@ -5,39 +5,24 @@ describe <%= controller_class_name %>Controller do
   def mock_<%= file_name %>(stubs={})
     @mock_<%= file_name %> ||= mock_model(<%= class_name %>, stubs)
   end
-  
-<% if options[:add_guard] -%>
-  before(:each) do
-    user = User.new(:id => 1)
-    def user.groups
-      [Group.new(:name => "root")]
-    end
-    controller.send(:current_user=, user)
-<% if options[:ixtlan] -%>
-    mock_configuration = mock_model(Configuration,{})
-    Configuration.should_receive(:instance).any_number_of_times.and_return(mock_configuration)
-    mock_configuration.should_receive(:session_idle_timeout).any_number_of_times.and_return(1)
-<% end -%>
-  end
-<% end -%>
 
   describe "GET index" do
 
-    it "exposes all <%= table_name.pluralize %> as @<%= table_name.pluralize %>" do
+    it "exposes all <%= table_name %> as @<%= table_name %>" do
       <%= class_name %>.should_receive(:all).and_return([mock_<%= file_name %>])
       get :index
       assigns[:<%= table_name %>].should == [mock_<%= file_name %>]
     end
 
     describe "with mime type of xml" do
-  
+
       it "renders all <%= table_name.pluralize %> as xml" do
         <%= class_name %>.should_receive(:all).and_return(<%= file_name.pluralize %> = mock("Array of <%= class_name.pluralize %>"))
         <%= file_name.pluralize %>.should_receive(:to_xml).and_return("generated XML")
         get :index, :format => 'xml'
         response.body.should == "generated XML"
       end
-    
+
     end
 
   end
@@ -49,7 +34,7 @@ describe <%= controller_class_name %>Controller do
       get :show, :id => "37"
       assigns[:<%= file_name %>].should equal(mock_<%= file_name %>)
     end
-    
+
     describe "with mime type of xml" do
 
       it "renders the requested <%= file_name %> as xml" do
@@ -60,11 +45,11 @@ describe <%= controller_class_name %>Controller do
       end
 
     end
-    
+
   end
 
   describe "GET new" do
-  
+
     it "exposes a new <%= file_name %> as @<%= file_name %>" do
       <%= class_name %>.should_receive(:new).and_return(mock_<%= file_name %>)
       get :new
@@ -74,7 +59,7 @@ describe <%= controller_class_name %>Controller do
   end
 
   describe "GET edit" do
-  
+
     it "exposes the requested <%= file_name %> as @<%= file_name %>" do
       <%= class_name %>.should_receive(:get!).with("37").and_return(mock_<%= file_name %>)
       get :edit, :id => "37"
@@ -86,7 +71,7 @@ describe <%= controller_class_name %>Controller do
   describe "POST create" do
 
     describe "with valid params" do
-      
+
       it "exposes a newly created <%= file_name %> as @<%= file_name %>" do
         <%= class_name %>.should_receive(:new).with({'these' => 'params'}).and_return(mock_<%= file_name %>(:save => true))
         post :create, :<%= file_name %> => {:these => 'params'}
@@ -98,9 +83,9 @@ describe <%= controller_class_name %>Controller do
         post :create, :<%= file_name %> => {}
         response.should redirect_to(<%= table_name.singularize %>_url(mock_<%= file_name %>))
       end
-      
+
     end
-    
+
     describe "with invalid params" do
 
       it "exposes a newly created but unsaved <%= file_name %> as @<%= file_name %>" do
@@ -114,9 +99,9 @@ describe <%= controller_class_name %>Controller do
         post :create, :<%= file_name %> => {}
         response.should render_template('new')
       end
-      
+
     end
-    
+
   end
 
   describe "PUT udpate" do
@@ -126,7 +111,6 @@ describe <%= controller_class_name %>Controller do
       it "updates the requested <%= file_name %>" do
         <%= class_name %>.should_receive(:get!).with("37").and_return(mock_<%= file_name %>)
         mock_<%= file_name %>.should_receive(:update).with({'these' => 'params'})
-        mock_<%= file_name %>.should_receive(:dirty?)
         put :update, :id => "37", :<%= file_name %> => {:these => 'params'}
       end
 
@@ -143,25 +127,23 @@ describe <%= controller_class_name %>Controller do
       end
 
     end
-    
+
     describe "with invalid params" do
 
       it "updates the requested <%= file_name %>" do
         <%= class_name %>.should_receive(:get!).with("37").and_return(mock_<%= file_name %>)
         mock_<%= file_name %>.should_receive(:update).with({'these' => 'params'})
-        mock_<%= file_name %>.should_receive(:dirty?)
         put :update, :id => "37", :<%= file_name %> => {:these => 'params'}
       end
 
       it "exposes the <%= file_name %> as @<%= file_name %>" do
         <%= class_name %>.stub!(:get!).and_return(mock_<%= file_name %>(:update => false))
-        mock_<%= file_name %>.should_receive(:dirty?)
         put :update, :id => "1"
         assigns(:<%= file_name %>).should equal(mock_<%= file_name %>)
       end
 
       it "re-renders the 'edit' template" do
-        <%= class_name %>.stub!(:get!).and_return(mock_<%= file_name %>(:update => false, :dirty? => true))
+        <%= class_name %>.stub!(:get!).and_return(mock_<%= file_name %>(:update => false))
         put :update, :id => "1"
         response.should render_template('edit')
       end
@@ -177,7 +159,7 @@ describe <%= controller_class_name %>Controller do
       mock_<%= file_name %>.should_receive(:destroy)
       delete :destroy, :id => "37"
     end
-  
+
     it "redirects to the <%= table_name %> list" do
       <%= class_name %>.should_receive(:get).with("1").and_return(mock_<%= file_name %>(:destroy => true))
       delete :destroy, :id => "1"

@@ -2,11 +2,11 @@ require 'rails_generator/generators/components/model/model_generator'
 require 'active_record'
 require 'datamapper4rails/overlay'
 
-
-class DatamapperModelGenerator < ModelGenerator
+class DatamapperRspecModelGenerator < RspecModelGenerator
 
   def manifest
-    overlay_dirs.add_generator("model")
+    overlay_dirs.add_generator("datamapper_model")
+    overlay_dirs.add_generator("rspec_model")
     super
   end
 

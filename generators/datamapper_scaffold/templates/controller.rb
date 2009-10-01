@@ -1,15 +1,12 @@
 class <%= controller_class_name %>Controller < ApplicationController
+
   # GET /<%= table_name %>
   # GET /<%= table_name %>.xml
   def index
-<% if options[:ixtlan] -%>
-    @<%= table_name %> = <%= class_name %>.all(@find_all_args)
-<% else -%>
     @<%= table_name %> = <%= class_name %>.all()
-<% end -%>
 
     respond_to do |format|
-      format.html # index.html.erb
+      format.html
       format.xml  { render :xml => @<%= table_name %> }
     end
   end
@@ -65,7 +62,7 @@ class <%= controller_class_name %>Controller < ApplicationController
     @<%= file_name %> = <%= class_name %>.get!(params[:id])
 
     respond_to do |format|
-      if @<%= file_name %>.update_attributes(params[:<%= file_name %>]) or not @<%= file_name %>.dirty?
+      if @<%= file_name %>.update(params[:<%= file_name %>])
         flash[:notice] = <% if options[:i18n] -%>t('<%= plural_name %>.<%= singular_name %>_updated')<% else -%>'<%= class_name %> was successfully updated.'<% end -%>
 
         format.html { redirect_to(<%= file_name %>_url(@<%= file_name %>.id)) }
@@ -90,22 +87,4 @@ class <%= controller_class_name %>Controller < ApplicationController
       format.xml  { head :ok }
     end
   end
-
-<% if options[:ixtlan] -%>
-  private
-
-  def audit
-    if @<%= file_name %>
-      @<%= file_name %>.to_s
-    elsif @<%= table_name %>
-<% if options[:ixtlan] -%>
-      "<%= controller_class_name %>[#{@<%= table_name %>.size};#{@field}:#{@direction}]"
-<% else -%>
-      "<%= controller_class_name %>[#{@<%= table_name %>.size}]"
-<% end -%>
-    else
-      ""
-    end
-  end
-<% end -%>
 end

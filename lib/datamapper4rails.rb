@@ -1,5 +1,5 @@
-#require 'datamapper4rails/database_config'
 require 'rails_datamapper'
+require 'datamapper4rails/datamapper_store'
 
 # keep this here until rails_datamapper has it included
 module DataMapper

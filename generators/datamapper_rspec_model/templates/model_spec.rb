@@ -18,7 +18,7 @@ describe <%= class_name %> do
     <%= singular_name %>.errors.on(:<%= attribute.name %>).should_not == nil
   end
 
-<% if attribute.type == :string or attribute.type == :text  or attribute.type == :slug -%>
+<% if [:string, :text, :slug].member? attribute.type -%>
   it 'should not match <%= attribute.name %>' do
     <%= singular_name %> = <%= class_name %>.create(@valid_attributes.merge(:<%= attribute.name %> => "<script" ))
     <%= singular_name %>.errors.on(:<%= attribute.name %>).should_not == nil
