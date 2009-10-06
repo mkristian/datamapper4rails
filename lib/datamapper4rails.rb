@@ -1,4 +1,5 @@
 require 'rails_datamapper'
+require 'rack-datamapper'
 require 'datamapper4rails/datamapper_store'
 
 # keep this here until rails_datamapper has it included

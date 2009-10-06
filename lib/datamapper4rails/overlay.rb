@@ -13,9 +13,11 @@ Rails::Generator::NamedBase.class_eval do
       @clazz = clazz
     end
     a.lookup(self.class)
-    def a.add_generator(generator_name, prepend = false)
-      path = File.join(@clazz.lookup(generator_name).path, 'templates')
-      push(path) unless member? path
+    def a.add_generator(generator_name)
+      unless frozen?
+        path = File.join(@clazz.lookup(generator_name).path, 'templates')
+        push(path) unless member? path
+      end
     end
     a
   end
@@ -40,8 +42,10 @@ Rails::Generator::NamedBase.class_eval do
     # first check if the template can be found with in any of the overlay directories
     if dirs = options[:overlay_dirs]
       generator_name = self.class.name.underscore.sub(/_generator/, '')
-      dirs.insert(0, File.join(self.class.lookup(generator_name).path, 'templates'))
-      
+      unless dirs.frozen?
+        dirs.insert(0, File.join(self.class.lookup(generator_name).path, 'templates'))
+        dirs.freeze
+      end
       file = path.nil? ? name : path
       dirs.each do |dir|
         if (f = File.join(dir, file)) and File.exists?(f)
