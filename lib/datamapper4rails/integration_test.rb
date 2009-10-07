@@ -17,7 +17,7 @@ module Datamapper4Rails
     end
 
     def generate(*args)
-      @generator_args << args.map(&:to_s).join(" ")
+      @generator_args << args.join(" ")
     end
 
     def execute

@@ -1,14 +1,15 @@
 = datamapper4rails
 
 * http://datamapper4rail.rubyforge.org
+* http://github.org/mkristian/datamapper4rails
 
 == DESCRIPTION:
 
-collection of datamapper related extensions. mostly needed to run within rails. the restful transactions is around filter for rails. the restful adapter can be outside of rails. datamapper store is a session store for rails which uses datamapper as persistent layer. the generators produces datamapper models for your rails application. quite a few things are "stolen" from dm-more/rails_datamapper. a lot of things do not work there and patches are still in process to be applied so until dm-more/rails_datamapper catches up, ut I hope these two project merge someday again.
+collection of datamapper related extensions. mostly needed to run within rails. the restful transactions is around filter for rails actions if needed to control such transaction on per action base otherwise use the rack extension from rack-datamapper. datamapper store is a session store for rails which uses datamapper as persistent layer and is just a wrapper around the datamapper session store from rack-datamapper. the generators produces datamapper models for your rails application.
 
 == FEATURES/PROBLEMS:
 
-* restful adapter does handle associations partially and does not handle collections
+* the generators introduce an "overlay" of templates. with that a generator can reuse the generator code and just replace one or more templates. i.e. datamapper_model just replaces the model.rb template to produce model using datamapper.
 
 == SYNOPSIS:
 
@@ -20,7 +21,20 @@ credits of the main idea goes to http://www.redhillonrails.org
 
 is implemented as around filter in rails and gets prepend to the filters of the action_controller of rails
 
-  require 'datamapper4rails/restful_transations
+  require 'datamapper4rails/restful_transations'
+
+=== restful transactions, transactions or identity_maps from rack-datamapper
+
+inside rails add something like this to your config
+
+config.middleware.use 'DataMapper::IdentityMaps'
+config.middleware.use 'DataMapper::RestfulTransactions'
+
+or add the repository name to it if you want something else then :default
+
+config.middleware.use 'DataMapper::IdentityMaps', :ldap
+config.middleware.use 'DataMapper::RestfulTransactions', :users
+
 
 === datamapper session store
 
@@ -34,40 +48,70 @@ in case you need a memory cache for your sessions on top of it add the following
 
 === generators for datamapper models
 
-this is taken from dm-more/rails_datamapper and extended it - to my liking. patches are submitted upstream until they get applied this will remain here.
+IMPORTANT: datamapper_scaffold generate valid application code but the test do NOT run due to missing fixtures with datamapper. the rspec version works well though.
 
-* dm-install: rake task for datamapper: automigrate, autoupgrade 
-* dm_model
-* rspec_dm_model
+* datamapper-install: rake task for datamapper with automigrate, autoupgrade and migrate
+* datamapper_model
+* datamapper_rspec_model
+* datamapper_scaffold
+* datamapper_rspec_scaffold
 
-=== database config
+the last  four generators follow the parameters of  the underlying generator:
+generator_name model_name [[attribute_name:attribute_type] ...]
 
-this is also taken from dm-more/rails_datamapper and just uses the 
-'config/database.yml' to configure a database connection. it also allows to configure multiple repositories for a single environment just nest the config  in such a way:
+to use the overlay write the generator like this
 
-  development:
-    repositories:
-      default:
-        adapter: sqlite3
-        database: db/development.sqlite3
-        pool: 5
-        timeout: 5000
-      users:
-        adapter: ldap
-        host: localhost
-        port: 389
-        base: dc=example,dc=com
-        bind_name: cn=admin,dc=example,dc=com
-        password: secret
+class MyModelGenerator < ModelGenerator
+  def manifest
+    overlay_dirs.add_generator("model")
+    super
+  end
+end
 
+and put whatever templates you want to overwrite in your templates directory, i.e. all your models need to have nice to_s methods.
 
 === restful adapter
 
+DEPRECATED
 this comes partly from dm-ldap-adapter and partly from dm-more/adapter/rest_adapter. the restful adapter allows to Create, Retrieve, Update and Delete resources via a restful service.
+
+== rails template
+
+there is a rails template 'datamapper_rails_templates.rb' in root of the gem - do not know where and how to pack it. the latest I keep on 'github.org/jeremy/rails-templates'
+
+=== to test the template there is helper class
+
+task :integration_tests => [:install] do
+  require 'datamapper4rails/integration_test'
+  Datamapper4Rails::IntegrationTest.new do |t|
+    t.rails_template = 'my_template.rb'
+    t.directory = 'tmp' # defaults to tmp and is also the generated application name
+    t.generate "datamapper_model role name:string"
+    t.generate "datamapper_scaffold domain name:string"
+    t.generate "datamapper_rspec_model user name:string"
+    t.generate "datamapper_rspec_scaffold group name:string"
+  end
+end
+
+== more examples 
+
+just run 'rake integration' and have a look at the sample rails application in 'tmp'
+
+== jruby
+
+at the time of writing there is a bug/restriction in rails which prevents unpacked gems with java extension or version number postfixed with '-java' to work.
+
+if you are familiar with maven (maven.apache.org) you can use the maven plugin from github.org/mkristian/rails-maven-plugin to freeze rails gems and patch it in place
+
+mvn de.saumya.mojo:rails-maven-plugin:rails-freeze-gems
+
+the 'rake integration_tests' does not work due to the fact that generating rails with a template falls back to native ruby for certain tasks which will fail due to missing (java) gems.
+
+same is true for using the rails template. in case you want to use a rails template directly with jruby consider the rails-maven-plugin which can setup a mavenized rails application with the help of rails templates.
 
 == REQUIREMENTS:
 
-* datamapper
+* rails_datamapper, rack-datamapper
 
 == INSTALL:
 

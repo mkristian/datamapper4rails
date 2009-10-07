@@ -31,7 +31,7 @@ Spec::Rake::SpecTask.new(:spec) do |t|
 end
 
 desc 'generate rails using all generators and run the specs'
-task :integration_tests => [:install] do
+task :integration_tests => [:spec, :install] do
   require 'datamapper4rails/integration_test'
   Datamapper4Rails::IntegrationTest.new do |t|
     t.generate "datamapper_model role name:string"

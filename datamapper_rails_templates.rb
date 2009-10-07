@@ -11,6 +11,7 @@ gem "do_sqlite3"
 gem 'dm-validations'
 gem 'dm-timestamps'
 gem 'dm-migrations'
+gem 'dm-serializer' # to allow xml interface to work
 
 # assume you prefer rspec over unit tests
 gem "rspec", :lib => false
@@ -99,7 +100,7 @@ echo
 echo "\tmvn de.saumya.mojo:rails-maven-plugin:server"
 echo
 echo "more info on"
-echo "\tgithub.org/mkristian/rails-maven-plugin"
+echo "\thttp://github.org/mkristian/rails-maven-plugin"
 echo
 CODE
 
@@ -108,6 +109,6 @@ rake 'db:sessions:create'
 logger.info 
 logger.info 
 logger.info "info mavenized rails application"
-logger.info "\tgithub.org/mkristian/rails-maven-plugin"
+logger.info "\thttp://github.org/mkristian/rails-maven-plugin"
 logger.info 
 logger.info 

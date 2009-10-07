@@ -3,7 +3,6 @@ Manifest.txt
 README.txt
 Rakefile
 datamapper_rails_templates.rb
-generate.sh
 generators/datamapper_install/datamapper_install_generator.rb
 generators/datamapper_install/templates/datamapper.rake
 generators/datamapper_model/datamapper_model_generator.rb

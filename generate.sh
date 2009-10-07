@@ -1,6 +1,0 @@
-script/generate datamapper_model datamapper_model name:string
-script/generate rspec_datamapper_model rspec_datamapper_model name:string
-script/generate datamapper_controller datamapper_controller index
-script/generate rspec_datamapper_controller rspec_datamapper_controller index
-#script/generate datamapper_scaffold datamapper_scaffold name:string
-script/generate rspec_datamapper_scaffold rspec_datamapper_scaffold name:string

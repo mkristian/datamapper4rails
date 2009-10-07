@@ -1,6 +1,8 @@
 module Datamapper4rails
   module IdentityMaps
 
+    warn "deprecated use the one from rack-datamapper instead"
+
     module Base
       def self.included(base)
         base.prepend_around_filter(IdentityMapFilter)
