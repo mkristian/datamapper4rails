@@ -70,6 +70,14 @@ end
 
 and put whatever templates you want to overwrite in your templates directory, i.e. all your models need to have nice to_s methods.
 
+=== patch for the rspec-rails gem
+
+add a file like spec/support/datamapper with
+
+require 'datamapper4rails/rspec'
+
+this allows rspec to stub_model with datamapper
+
 === restful adapter
 
 DEPRECATED
