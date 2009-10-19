@@ -49,7 +49,7 @@ Rails::Generator::NamedBase.class_eval do
       file = path.nil? ? name : path
       dirs.each do |dir|
         if (f = File.join(dir, file)) and File.exists?(f)
-          logger.overlay f
+          logger.overlay f if options[:backtrace]
           return f
         end
       end
