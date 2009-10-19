@@ -9,25 +9,18 @@ require 'pathname'
 
 require './lib/datamapper4rails/version.rb'
 
-Hoe.new('datamapper4rails', Datamapper4rails::VERSION) do |p|
+Hoe.spec('datamapper4rails') do |p|
   p.rubyforge_name = 'datamapper4rail'
   p.developer('mkristian', 'm.kristian@web.de')
-  p.extra_deps = [['rack-datamapper', '~>0.2'], 'rails_datamapper']
+  p.extra_deps = [['rack-datamapper', '~>0.2'], ['rails_datamapper', '>= 0']]
   p.remote_rdoc_dir = '' # Release to root
+  p.rspec_options << '--options' << 'spec/spec.opts'
 end
 
 desc 'Install the package as a gem.'
 task :install => [:clean, :package] do
   gem = Dir['pkg/*.gem'].first
   sh "gem install --local #{gem} --no-ri --no-rdoc"
-end
-
-desc 'Run specifications'
-Spec::Rake::SpecTask.new(:spec) do |t|
-  if File.exists?('spec/spec.opts')
-    t.spec_opts << '--options' << 'spec/spec.opts'
-  end
-  t.spec_files = Pathname.glob('./spec/**/*_spec.rb')
 end
 
 desc 'generate rails using all generators and run the specs'
