@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'dm-core'
+require 'base64'
 $LOAD_PATH << Pathname(__FILE__).dirname.parent.expand_path + 'lib'
 
 # just define a empty abstract store
