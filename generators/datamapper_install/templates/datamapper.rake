@@ -46,8 +46,10 @@ namespace :db do
 
   # this is needed for rspec and test tasks  
   namespace :test do
-    RAILS_ENV = 'test'
-    task :prepare => :automigrate
+    task :prepare do
+      RAILS_ENV='test'
+      Rake::Task['db:automigrate'].invoke
+    end
   end
 
   namespace :migrate do
