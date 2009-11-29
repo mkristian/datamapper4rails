@@ -77,32 +77,43 @@ if RUBY_PLATFORM =~ /java/
 end
 CODE
 
-file 'prepare_jruby.sh', <<-CODE
-#!/bin/bash
-
-echo
-echo "shall freeze rails and fix a bug which prevents rails to use certain"
-echo "java gems like the dataobjects drivers (do_sqlite3, etc) !!"
-echo
-
-mvn --version
-if [ $? -ne 0 ] ; then
-
-        echo "please install maven >= 2.0.9 from maven.apache.org"
-        exit -1
-fi
-
-mvn de.saumya.mojo:rails-maven-plugin:gems-install de.saumya.mojo:rails-maven-plugin:rails-freeze-gems de.saumya.mojo:rails-maven-plugin:gems-install -Djruby.fork=false
-
-echo
-echo "you can run rails with (no need to install jruby !!)"
-echo
-echo "\tmvn de.saumya.mojo:rails-maven-plugin:server -Djruby.fork=false"
-echo
-echo "more info on"
-echo "\thttp://github.org/mkristian/rails-maven-plugin"
-echo
-echo
+file 'pom.xml', <<-CODE
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.example</groupId>
+  <artifactId>demo</artifactId>
+  <packaging>war</packaging>
+  <version>1.0-SNAPSHOT</version>
+  <name>rails datamapper demo</name>
+  <url>http://github.com/mkristian/rails-templates/blob/master/datamapper.rb</url>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>saumya</id>
+      <name>Saumyas Plugins</name>
+      <url>http://mojo.saumya.de</url>
+    </pluginRepository>
+  </pluginRepositories>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>de.saumya.mojo</groupId>
+        <artifactId>rails-maven-plugin</artifactId>
+	<version>0.3.0</version>
+      </plugin>
+      <plugin>
+        <groupId>de.saumya.mojo</groupId>
+        <artifactId>jruby-maven-plugin</artifactId>
+	<version>0.3.0</version>
+      </plugin>
+    </plugins>
+  </build>
+  <properties>
+    <jruby.fork>false</jruby.fork>
+  </properties>
+</project>
 CODE
 
 rake 'db:sessions:create'
@@ -112,10 +123,13 @@ logger.info
 logger.info "info mavenized rails application"
 logger.info "\thttp://github.org/mkristian/rails-maven-plugin"
 logger.info 
-logger.info "if you want to run jruby please run again after uninstalling"
-logger.info "the native extension of do_sqlite3"
+logger.info "if you want to run jruby please uninstall"
+logger.info "the native extension of do_sqlite3 and install the java version"
 logger.info "\truby -S gem uninstall do_sqlite3"
 logger.info "\tjruby -S rake gems:install"
-logger.info "rake gems:unpack does NOT work with jruby due to a bug in rail <=2.3.4"
-logger.info "you can try the prepare-jruby.sh script and see if this works for you"
+logger.info 
+logger.info "rake gems:unpack does NOT work with jruby due to a bug in rails <=2.3.4"
+logger.info "you can try which patches rails after freezing it"
+logger.info "\tmvn rails:rails-freeze-gems"
+logger.info 
 logger.info 
