@@ -1,4 +1,4 @@
-require 'rails_datamapper'
+require 'datamapper4rails/rails_datamapper'
 require 'rack-datamapper'
 require 'datamapper4rails/datamapper_store'
 

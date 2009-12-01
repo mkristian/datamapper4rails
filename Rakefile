@@ -12,7 +12,7 @@ require './lib/datamapper4rails/version.rb'
 Hoe.spec('datamapper4rails') do |p|
   p.rubyforge_name = 'datamapper4rail'
   p.developer('mkristian', 'm.kristian@web.de')
-  p.extra_deps = [['rack-datamapper', '~>0.2'], ['rails_datamapper', '>= 0']]
+  p.extra_deps = [['rack-datamapper', '~>0.2']]
   p.remote_rdoc_dir = '' # Release to root
   p.rspec_options << '--options' << 'spec/spec.opts'
 end
