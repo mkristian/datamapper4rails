@@ -101,12 +101,17 @@ file 'pom.xml', <<-CODE
       <plugin>
         <groupId>de.saumya.mojo</groupId>
         <artifactId>rails-maven-plugin</artifactId>
-	<version>0.3.0</version>
+	<version>0.3.1</version>
       </plugin>
       <plugin>
         <groupId>de.saumya.mojo</groupId>
         <artifactId>jruby-maven-plugin</artifactId>
-	<version>0.3.0</version>
+	<version>0.3.1</version>
+      </plugin>
+      <plugin>
+        <groupId>de.saumya.mojo</groupId>
+        <artifactId>gem-maven-plugin</artifactId>
+	<version>0.3.1</version>
       </plugin>
     </plugins>
   </build>
@@ -128,8 +133,14 @@ logger.info "the native extension of do_sqlite3 and install the java version"
 logger.info "\truby -S gem uninstall do_sqlite3"
 logger.info "\tjruby -S rake gems:install"
 logger.info 
-logger.info "rake gems:unpack does NOT work with jruby due to a bug in rails <=2.3.4"
-logger.info "you can try which patches rails after freezing it"
+logger.info "rake gems:unpack does NOT work with jruby due to a bug in rails <=2.3.5"
+logger.info "you can try"
 logger.info "\tmvn rails:rails-freeze-gems"
+logger.info "which patches rails after freezing it"
 logger.info 
 logger.info 
+logger.info
+logger.info
+logger.info "for dm-core version 0.10.2 there are a lot of deprecated warning but everything works as expected"
+logger.info
+logger.info
