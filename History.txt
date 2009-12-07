@@ -1,4 +1,14 @@
-=== 1.0.0 / 2009-03-18
+=== 0.4.0 / 2009-12-07
+
+* removed obsolete dependency to rails_datamapper
+
+* allow to configure multiple repositories
+
+* fixed problem in rails template with upcoming datamapper 0.10.2
+
+* added pom.xml in rails template to use maven straight away without downloading maven artifacts
+ 
+=== 0.0.0 / 2009-03-18
 
 * 1 major enhancement
 
