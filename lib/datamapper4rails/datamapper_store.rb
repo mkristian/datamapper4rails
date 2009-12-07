@@ -1,15 +1,28 @@
 require 'dm-core'
 require 'rack_datamapper/session/datamapper'
-require 'active_support'
+begin
+  require 'securerandom'
+rescue LoadError
+end
 
 module ActionController
   module Session
     class DatamapperStore < AbstractStore
+      SecureRandom =
+        if defined?(::SecureRandom)
+          # Use Ruby's SecureRandom library if available.
+          ::SecureRandom
+        else
+          # try if there is active support around ;-)
+          require 'active_support'
+          ::ActiveSupport::SecureRandom
+        end
 
       def initialize(app, options = {})
         super
+
         id_generator = Proc.new do
-          ::ActiveSupport::SecureRandom.hex(16)
+          SecureRandom.hex(16)
         end
         @store = ::DataMapper::Session::Abstract::Store.new(app, options, id_generator)
         @options = options

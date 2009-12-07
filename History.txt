@@ -1,4 +1,20 @@
-=== 1.0.0 / 2009-03-18
+=== 0.5.0 / 2010-29-06
+
+* switch to DM version 1.0.0
+
+* use maven as primary build system but include gemspec (and keep hoe for the time being)
+
+=== 0.4.0 / 2009-12-07
+
+* removed obsolete dependency to rails_datamapper
+
+* allow to configure multiple repositories
+
+* fixed problem in rails template with upcoming datamapper 0.10.2
+
+* added pom.xml in rails template to use maven straight away without downloading maven artifacts
+ 
+=== 0.0.0 / 2009-03-18
 
 * 1 major enhancement
 

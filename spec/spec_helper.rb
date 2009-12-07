@@ -21,14 +21,14 @@ class Session
  
   property :updated_at, DateTime
 
-  property :data, Text, :nullable => false, :default => ::Base64.encode64(Marshal.dump({}))
+  property :raw_data, Text, :required => true, :default => ::Base64.encode64(Marshal.dump({}))
   
   def data=(data)
-    attribute_set(:data, ::Base64.encode64(Marshal.dump(data)))
+    attribute_set(:raw_data, ::Base64.encode64(Marshal.dump(data)))
   end
   
   def data
-    Marshal.load(::Base64.decode64(attribute_get(:data)))
+    Marshal.load(::Base64.decode64(attribute_get(:raw_data)))
   end 
 end
 
