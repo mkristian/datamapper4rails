@@ -35,6 +35,13 @@
       <type>gem</type>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>rubygems</groupId>
+      <artifactId>rake</artifactId>
+      <version>0.8.7</version>
+      <type>gem</type>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <repositories>
     <repository>
@@ -62,7 +69,7 @@
         <extensions>true</extensions>
 	<configuration>
 	  <date>2010-06-20</date>
-	  <extraRdocFiles>History.txt,Manifest.txt,README.txt</extraRdocFiles>
+	  <extraRdocFiles>History.txt,README.txt</extraRdocFiles>
 	  <rdocOptions>--main,README.txt</rdocOptions>
 	  <requirePaths>lib</requirePaths>
 	  <rubyforgeProject>datamapper4rail</rubyforgeProject>

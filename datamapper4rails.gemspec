@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.date = '2010-06-20'
   s.rubygems_version = '1.3.5'
   s.rubyforge_project = 'datamapper4rail'
-  s.extra_rdoc_files = ['History.txt','Manifest.txt','README.txt']
+  s.extra_rdoc_files = ['History.txt','README.txt']
   s.rdoc_options = ['--main','README.txt']
   s.require_paths = ['lib']
   s.files = Dir['lib/**/*']
@@ -22,4 +22,5 @@ Gem::Specification.new do |s|
   s.test_files += Dir['spec/**/*_spec.rb']
   s.add_dependency 'rack-datamapper', '~> 0.3.0'
   s.add_development_dependency 'rspec', '~> 1.3.0'
+  s.add_development_dependency 'rake', '0.8.7'
 end
