@@ -6,11 +6,11 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>rubygems</groupId>
   <artifactId>datamapper4rails</artifactId>
-  <version>0.5.1</version>
+  <version>0.5.1-SNAPSHOT</version>
   <packaging>gem</packaging>
   <name><![CDATA[collection of datamapper related extensions]]></name>
   <description><![CDATA[collection of datamapper related extensions. mostly needed to run within rails. the restful transactions is around filter for rails actions if needed to control such transaction on per action base otherwise use the rack extension from rack-datamapper. datamapper store is a session store for rails which uses datamapper as persistent layer and is just a wrapper around the datamapper session store from rack-datamapper. the generators produces datamapper models for your rails application.]]></description>
-  <url>http://datamapper4rail.rubyforge.org</url>
+  <url>http://github.com/mkristian/datamapper4rails</url>
   <developers>
     <developer>
       <id>m.kristian</id>
@@ -19,6 +19,11 @@
     </developer>
   </developers>
   <licenses>
+    <license>
+      <name>MIT-LICENSE</name>
+      <url>./MIT-LICENSE</url>
+      <distribution>repo</distribution>
+    </license>
   </licenses>
   <dependencies>
     <dependency>
@@ -45,20 +50,13 @@
   </dependencies>
   <repositories>
     <repository>
-      <id>rubygems</id>
+      <id>rubygems-releases</id>
       <url>http://gems.saumya.de/releases</url>
     </repository>
   </repositories>
-  <pluginRepositories>
-    <pluginRepository>
-      <id>sonatype-nexus-snapshots</id>
-      <name>Sonatype Nexus Snapshots</name>
-      <url>http://oss.sonatype.org/content/repositories/snapshots</url>
-    </pluginRepository>
-  </pluginRepositories>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jruby.plugins.version>0.20.0-SNAPSHOT</jruby.plugins.version>
+    <jruby.plugins.version>0.20.0</jruby.plugins.version>
   </properties>
   <build>
     <plugins>
@@ -67,14 +65,34 @@
         <artifactId>gem-maven-plugin</artifactId>
         <version>${jruby.plugins.version}</version>
         <extensions>true</extensions>
-	<configuration>
-	  <date>2010-06-20</date>
-	  <extraRdocFiles>History.txt,README.txt</extraRdocFiles>
-	  <rdocOptions>--main,README.txt</rdocOptions>
-	  <requirePaths>lib</requirePaths>
-	  <rubyforgeProject>datamapper4rail</rubyforgeProject>
-	  <rubygemsVersion>1.3.5</rubygemsVersion>
-	</configuration>
+        <executions>
+          <execution>
+	    <id>gemspec</id>
+            <goals><goal>package</goal></goals>
+            <configuration>
+              <extraRdocFiles>History.txt,README.txt</extraRdocFiles>
+              <rdocOptions>--main,README.txt</rdocOptions>
+              <rubyforgeProject>datamapper4rail</rubyforgeProject>
+              <overwriteGemspec>true</overwriteGemspec>
+            </configuration>
+          </execution>
+	  <execution>
+	    <id>version</id>
+	    <phase>compile</phase>
+	    <goals>
+	      <goal>exec</goal>
+	    </goals>
+	    <configuration>
+	      <script>
+		version = '${project.version}'.sub(/-SNAPSHOT/, '')
+		puts "module Datamapper4rails"
+		puts "  VERSION = '#{version}'.freeze"
+		puts "end"
+	      </script>
+	      <outputFile>lib/datamapper4rails/version.rb</outputFile>
+	    </configuration>
+	  </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>de.saumya.mojo</groupId>

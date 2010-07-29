@@ -1,3 +1,11 @@
+=== 0.5.1 / 2010-29-07
+
+* switch over to use pom.xml as primary project configuration
+
+* made basic rake tasks work with both ruby and jruby
+
+* rake tasks are compatible to the maven setup
+
 === 0.5.0 / 2010-29-06
 
 * switch to DM version 1.0.0

@@ -1,26 +1,43 @@
 # -*- ruby -*-
 
 require 'rubygems'
-require 'hoe'
 
 require 'spec'
 require 'spec/rake/spectask'
-require 'pathname'
 
 require './lib/datamapper4rails/version.rb'
 
-Hoe.spec('datamapper4rails') do |p|
-  p.rubyforge_name = 'datamapper4rail'
-  p.developer('mkristian', 'm.kristian@web.de')
-  p.extra_deps = [['rack-datamapper', '~>0.3']]
-  p.remote_rdoc_dir = '' # Release to root
-  p.rspec_options << '--options' << 'spec/spec.opts'
+build_dir = 'target'
+
+desc 'clean up'
+task :clean do
+  FileUtils.rm_rf(build_dir)
+end
+
+desc 'Package as a gem.'
+task :package do
+  require 'fileutils'
+  gemspec = Dir['*.gemspec'].first
+  Kernel.system("#{RUBY} -S gem build #{gemspec}")
+  FileUtils.mkdir_p(build_dir)
+  gem = Dir['*.gem'].first
+  FileUtils.mv(gem, File.join(build_dir,"#{gem}"))
+  puts File.join(build_dir,"#{gem}")
 end
 
 desc 'Install the package as a gem.'
-task :install => [:clean, :package] do
-  gem = Dir['pkg/*.gem'].first
-  sh "gem install --local #{gem} --no-ri --no-rdoc"
+task :install => [:package] do
+  gem = Dir[File.join(build_dir, '*.gem')].first
+  extra = ENV['GEM_HOME'].nil? && ENV['GEM_PATH'].nil? ? "--user-install" : ""
+  Kernel.system("#{RUBY} -S gem install --local #{gem} --no-ri --no-rdoc #{extra}")
+end
+
+desc 'Run specifications'
+Spec::Rake::SpecTask.new(:spec) do |t|
+  if File.exists?(File.join('spec','spec.opts'))
+    t.spec_opts << '--options' << File.join('spec','spec.opts')
+  end
+  t.spec_files = Dir.glob(File.join('spec','**','*_spec.rb'))
 end
 
 desc 'generate rails using all generators and run the specs'
@@ -34,8 +51,8 @@ task :integration_tests => [:spec, :install] do
   end
 end
 
-require 'yard'
+#require 'yard'
 
-YARD::Rake::YardocTask.new
+#YARD::Rake::YardocTask.new
 
 # vim: syntax=Ruby
