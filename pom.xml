@@ -6,7 +6,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>rubygems</groupId>
   <artifactId>datamapper4rails</artifactId>
-  <version>0.5.1-SNAPSHOT</version>
+  <version>0.5.2-SNAPSHOT</version>
   <packaging>gem</packaging>
   <name><![CDATA[collection of datamapper related extensions]]></name>
   <description><![CDATA[collection of datamapper related extensions. mostly needed to run within rails. the restful transactions is around filter for rails actions if needed to control such transaction on per action base otherwise use the rack extension from rack-datamapper. datamapper store is a session store for rails which uses datamapper as persistent layer and is just a wrapper around the datamapper session store from rack-datamapper. the generators produces datamapper models for your rails application.]]></description>
@@ -65,17 +65,13 @@
         <artifactId>gem-maven-plugin</artifactId>
         <version>${jruby.plugins.version}</version>
         <extensions>true</extensions>
+	<configuration>
+	  <extraRdocFiles>History.txt,README.txt</extraRdocFiles>
+	  <rdocOptions>--main,README.txt</rdocOptions>
+	  <rubyforgeProject>datamapper4rail</rubyforgeProject>
+	  <gemspecOverwrite>true</gemspecOverwrite>
+	</configuration>
         <executions>
-          <execution>
-	    <id>gemspec</id>
-            <goals><goal>package</goal></goals>
-            <configuration>
-              <extraRdocFiles>History.txt,README.txt</extraRdocFiles>
-              <rdocOptions>--main,README.txt</rdocOptions>
-              <rubyforgeProject>datamapper4rail</rubyforgeProject>
-              <overwriteGemspec>true</overwriteGemspec>
-            </configuration>
-          </execution>
 	  <execution>
 	    <id>version</id>
 	    <phase>compile</phase>
