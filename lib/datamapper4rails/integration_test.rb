@@ -22,7 +22,7 @@ module Datamapper4Rails
 
     def execute
       FileUtils.rm_rf(@directory)
-      run("-S rails -fm #{rails_template} #{directory}")  
+      run("-S rails _2.3.8_ -fm #{rails_template} #{directory}")
       FileUtils.cd(@directory) do
         @generator_args.each do |arg|
           run("script/generate #{arg}")  
