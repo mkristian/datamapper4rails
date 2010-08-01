@@ -1,4 +1,4 @@
-=== 0.5.1 / 2010-29-07
+=== 0.5.2 / 2010-29-07
 
 * switch over to use pom.xml as primary project configuration
 
